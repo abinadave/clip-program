@@ -7,6 +7,12 @@ use App\Assist as Assist;
 
 class AssistController extends Controller
 {
+    public function fetchByType($type){
+        return response()->json([
+            'type' => $type,
+            'assists' => ($type != 0) ? Assist::where('type_of_assistance', $type)->orderBy('id','desc')->get() : Assist::orderBy('id','desc')->get()
+        ]);
+    }
     public function fetch(){
         return response()->json([
             'assists' => Assist::orderBy('id','desc')->get(),

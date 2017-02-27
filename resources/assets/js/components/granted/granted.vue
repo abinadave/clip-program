@@ -4,7 +4,7 @@
 		  <div class="panel-heading">Panel Heading</div>
 		  <div class="panel-body">
 		  <input v-model="search" type="text" class="form-control" placeholder="Search" style="width: 220px">
-		  <select class="form-control pull-right" style="width: 30%; margin-top: -36px">
+		  <select v-model="selectedType" class="form-control pull-right" style="width: 30%; margin-top: -36px">
 		  	 <option :value="0">All</option>
 		  	 <option :value="type.id" v-for="type in types">
 		  	 	{{ type.name }}
@@ -46,31 +46,13 @@
         mounted(){
         	this.fetch();
         },
-        computed: {
-        	filteredList(){
-        		let self = this;
-        		let search = self.search.toLowerCase();
-        		let rsProvince = [], province = {};
-        		let rsTypes = [], type = {};
-        		return self.assists.filter(function(index) {
-        			rsProvince = _.filter(self.provinces, {id: index.province});
-        			rsTypes = _.filter(self.types, {id: index.type_of_assistance});
-        			province = (rsProvince.length > 0) ? rsProvince[0].name : '';
-        			type = (rsTypes.length > 0) ? rsTypes[0].name : '';
-        			return index.fr_name.toLowerCase().indexOf(search) !== -1 ||
-        				   index.address.toLowerCase().indexOf(search) !== -1 ||
-        				   index.amount.toString().toLowerCase().indexOf(search) !== -1 ||
-        				   province.toLowerCase().indexOf(search) !== -1 ||
-        				   type.toLowerCase().indexOf(search) !== -1
-        		});
-        	}
-        },
         data(){
         	return {
         		assists: [],
         		types: [],
         		provinces: [],
-        		search: ''
+        		search: '',
+        		selectedType: 0
         	}
         },
         methods: {
@@ -113,6 +95,41 @@
         		    }
         		});
         	}
+        },
+        computed: {
+        	filteredList(){
+        		let self = this;
+        		let search = self.search.toLowerCase();
+        		let rsProvince = [], province = {};
+        		let rsTypes = [], type = {};
+        		return self.assists.filter(function(index) {
+        			rsProvince = _.filter(self.provinces, {id: index.province});
+        			rsTypes = _.filter(self.types, {id: index.type_of_assistance});
+        			province = (rsProvince.length > 0) ? rsProvince[0].name : '';
+        			type = (rsTypes.length > 0) ? rsTypes[0].name : '';
+        			return index.fr_name.toLowerCase().indexOf(search) !== -1 ||
+        				   index.address.toLowerCase().indexOf(search) !== -1 ||
+        				   index.amount.toString().toLowerCase().indexOf(search) !== -1 ||
+        				   province.toLowerCase().indexOf(search) !== -1 ||
+        				   type.toLowerCase().indexOf(search) !== -1
+        		});
+        	}
+        },
+
+        watch: {
+        	'selectedType': function(newVal){
+        		let self = this;
+        		var resource = self.$resource('assist/display/by/type{/id}');
+				  // GET someItem/1
+				  resource.get({id: newVal}).then(resp => {
+				      if (resp.status === 200) {
+				      	 let json =resp.body;
+				      	 self.assists = json.assists;
+				      }
+				  });
+
+        	}
         }
+       
     }
 </script>

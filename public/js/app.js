@@ -13061,30 +13061,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     mounted: function mounted() {
         this.fetch();
     },
-
-    computed: {
-        filteredList: function filteredList() {
-            var self = this;
-            var search = self.search.toLowerCase();
-            var rsProvince = [],
-                province = {};
-            var rsTypes = [],
-                type = {};
-            return self.assists.filter(function (index) {
-                rsProvince = _.filter(self.provinces, { id: index.province });
-                rsTypes = _.filter(self.types, { id: index.type_of_assistance });
-                province = rsProvince.length > 0 ? rsProvince[0].name : '';
-                type = rsTypes.length > 0 ? rsTypes[0].name : '';
-                return index.fr_name.toLowerCase().indexOf(search) !== -1 || index.address.toLowerCase().indexOf(search) !== -1 || index.amount.toString().toLowerCase().indexOf(search) !== -1 || province.toLowerCase().indexOf(search) !== -1 || type.toLowerCase().indexOf(search) !== -1;
-            });
-        }
-    },
     data: function data() {
         return {
             assists: [],
             types: [],
             provinces: [],
-            search: ''
+            search: '',
+            selectedType: 0
         };
     },
 
@@ -13128,7 +13111,39 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 }
             });
         }
+    },
+    computed: {
+        filteredList: function filteredList() {
+            var self = this;
+            var search = self.search.toLowerCase();
+            var rsProvince = [],
+                province = {};
+            var rsTypes = [],
+                type = {};
+            return self.assists.filter(function (index) {
+                rsProvince = _.filter(self.provinces, { id: index.province });
+                rsTypes = _.filter(self.types, { id: index.type_of_assistance });
+                province = rsProvince.length > 0 ? rsProvince[0].name : '';
+                type = rsTypes.length > 0 ? rsTypes[0].name : '';
+                return index.fr_name.toLowerCase().indexOf(search) !== -1 || index.address.toLowerCase().indexOf(search) !== -1 || index.amount.toString().toLowerCase().indexOf(search) !== -1 || province.toLowerCase().indexOf(search) !== -1 || type.toLowerCase().indexOf(search) !== -1;
+            });
+        }
+    },
+
+    watch: {
+        'selectedType': function selectedType(newVal) {
+            var self = this;
+            var resource = self.$resource('assist/display/by/type{/id}');
+            // GET someItem/1
+            resource.get({ id: newVal }).then(function (resp) {
+                if (resp.status === 200) {
+                    var json = resp.body;
+                    self.assists = json.assists;
+                }
+            });
+        }
     }
+
 };
 
 /***/ }),
@@ -33161,10 +33176,26 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }
   }), _vm._v(" "), _c('select', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.selectedType),
+      expression: "selectedType"
+    }],
     staticClass: "form-control pull-right",
     staticStyle: {
       "width": "30%",
       "margin-top": "-36px"
+    },
+    on: {
+      "change": function($event) {
+        _vm.selectedType = Array.prototype.filter.call($event.target.options, function(o) {
+          return o.selected
+        }).map(function(o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val
+        })[0]
+      }
     }
   }, [_c('option', {
     domProps: {

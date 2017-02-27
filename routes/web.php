@@ -28,4 +28,5 @@ Route::group(['middleware' => ['admin']], function () {
     Route::get('province', 'ProvinceController@fetchProvinces');
     Route::post('assist', 'AssistController@insert');
     Route::get('granted', 'AssistController@fetch');
+    Route::get('assist/display/by/type/{id}', 'AssistController@fetchByType');
 });
