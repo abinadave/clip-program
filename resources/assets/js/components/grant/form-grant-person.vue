@@ -19,7 +19,7 @@
           </div>
           <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.fr_name }">
             <label>FR Name</label>
-            <input v-model="frName" type="text" class="form-control" placeholder="FR name">
+            <input id="fr-names" v-model="frName" type="text" class="form-control" placeholder="FR name">
           </div>
           <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.date_submitted }">
             <label>Date Submitted</label>
@@ -31,7 +31,7 @@
           </div>
           <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.address }">
             <label>Address</label>
-            <input v-model="address" type="text" class="form-control" placeholder="Address">
+            <input id="addresses" v-model="address" type="text" class="form-control" placeholder="Address">
           </div>
           <div :class="{ 'form-group col-md-5 ': true }">
             <button type="submit" class="btn btn-primary btn-lg active">Submit</button>
@@ -44,14 +44,24 @@
 <script>
     import toastr from 'toastr'
     import alertify from 'alertify.js'
+    import 'jquery-ui/themes/base/theme.css';
+    import 'jquery-ui/themes/base/core.css';
+    import 'jquery-ui/themes/base/theme.css';
+    import 'jquery-ui'
+    import 'jquery-ui/themes/base/autocomplete.css';
+    import 'jquery-ui/ui/widgets/autocomplete';
+    import 'jquery-ui/ui/core';
+
     export default {
         mounted() {
             console.log('Component mounted.');
             this.fetchProvinces();
             this.fetchTypes();
+            this.fetchAssist();
         },
         data(){
             return {
+                assists: [],
                 types: [], provinces: [],
                 province: 1,
                 typeOfAssistance: 22,
@@ -72,9 +82,29 @@
             }
         },
         methods: {
+            autoCompleteFrName(){
+                let self = this;
+                let names = _.map(self.assists, 'fr_name');
+                $( "#fr-names" ).autocomplete({
+                  source: _.uniq(names),
+                  select: function( event, ui ) {
+                    self.frName = ui.item.value;
+                  }
+                });
+            },
+            autoCompleteAddress(){
+                let self = this;
+                let addresses = _.map(self.assists, 'address');
+                $( "#addresses" ).autocomplete({
+                  source: _.uniq(addresses),
+                  select: function( event, ui ) {
+                    self.address = ui.item.value;
+                  }
+                });
+            },
             getAssistanceName(){
                 let self = this;
-                return 'nice'
+                return 'nice';
             },
             submitForm(){
                 let self = this;
@@ -159,6 +189,24 @@
                       console.log(resp)
                     }
                 });
+            },
+            fetchAssist(){
+                let self = this;
+                self.$http.get('assist/display/by/type/0').then((resp) => {
+                    if (resp.status === 200) {
+                        let json = resp.body;
+                        self.assists = json.assists;
+                    }
+                }, (resp) => {
+
+                })
+            }
+        },
+        watch: {
+            'assists': function(newVal){
+                let self = this;
+                self.autoCompleteFrName();
+                self.autoCompleteAddress();
             }
         }
     }

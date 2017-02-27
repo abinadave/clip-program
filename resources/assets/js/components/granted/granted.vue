@@ -40,8 +40,10 @@
 </template>
 
 <script>
+
 	import moment from 'moment'
 	import accounting from 'accounting'
+	
     export default {
         mounted(){
         	this.fetch();
