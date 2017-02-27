@@ -26,7 +26,7 @@ class AssistController extends Controller
 	        'province' => 'required',
 	        'address' => 'required',
 	        'type_of_assistance' => 'required',
-	        'date_submitted' => 'required',
+	        // 'date_submitted' => 'required',
 	        'amount' => 'required|numeric'
 	    ]);
 	    return $this->validateDuplicates($request);

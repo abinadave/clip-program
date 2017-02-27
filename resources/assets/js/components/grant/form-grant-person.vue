@@ -19,7 +19,7 @@
           </div>
           <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.fr_name }">
             <label>FR Name</label>
-            <input id="fr-names" v-model="frName" type="text" class="form-control" placeholder="FR name">
+            <input ref='fr_name' id="fr-names" v-model="frName" type="text" class="form-control" placeholder="FR name">
           </div>
           <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.date_submitted }">
             <label>Date Submitted</label>
@@ -54,10 +54,10 @@
 
     export default {
         mounted() {
-            console.log('Component mounted.');
             this.fetchProvinces();
             this.fetchTypes();
             this.fetchAssist();
+            this.$refs.fr_name.focus();
         },
         data(){
             return {
@@ -121,13 +121,14 @@
                 self.$http.post('/assist', form).then((resp) => {
                     if (resp.status === 200) {
                         let json = resp.body;
-                        console.log(json)
                         if (json.duplicate > 0) {
                             self.error.fr_name = true;
                             self.error.type_of_assistance = true;
                             alertify.confirm('FR Name: <b class="text-primary">' +self.frName.toUpperCase() + '</b> had already granted <i class="text-danger">' + self.getAssistanceName() + ' Assistance</i> ');
                         }else {
                             if (json.assist.id > 0) {
+                                self.assists.push(json.assist);
+                                self.$refs.fr_name.focus();
                                 toastr.success('Successfully granted');
                                 self.clearForm();
                             }
@@ -138,7 +139,6 @@
                     if (resp.status === 422) {
                         let json = resp.body;
                         $.each(json, function(index, val) {
-                            console.log(index + ': ' + val)
                             self.error[index] = true;
                         });
                     }

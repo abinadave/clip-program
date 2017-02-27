@@ -12875,10 +12875,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = {
     mounted: function mounted() {
-        console.log('Component mounted.');
         this.fetchProvinces();
         this.fetchTypes();
         this.fetchAssist();
+        this.$refs.fr_name.focus();
     },
     data: function data() {
         return {
@@ -12943,13 +12943,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             self.$http.post('/assist', form).then(function (resp) {
                 if (resp.status === 200) {
                     var json = resp.body;
-                    console.log(json);
                     if (json.duplicate > 0) {
                         self.error.fr_name = true;
                         self.error.type_of_assistance = true;
                         __WEBPACK_IMPORTED_MODULE_1_alertify_js___default.a.confirm('FR Name: <b class="text-primary">' + self.frName.toUpperCase() + '</b> had already granted <i class="text-danger">' + self.getAssistanceName() + ' Assistance</i> ');
                     } else {
                         if (json.assist.id > 0) {
+                            self.assists.push(json.assist);
+                            self.$refs.fr_name.focus();
                             __WEBPACK_IMPORTED_MODULE_0_toastr___default.a.success('Successfully granted');
                             self.clearForm();
                         }
@@ -12959,7 +12960,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 if (resp.status === 422) {
                     var json = resp.body;
                     $.each(json, function (index, val) {
-                        console.log(index + ': ' + val);
                         self.error[index] = true;
                     });
                 }
@@ -13111,6 +13111,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -13126,7 +13137,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             types: [],
             provinces: [],
             search: '',
-            selectedType: 0
+            selectedType: 0,
+            totalAmount: 0
         };
     },
 
@@ -13134,7 +13146,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         getActionTaken: function getActionTaken(action) {
             var self = this;
             if (action === '') {
-                return 'none';
+                return '-';
             }
         },
         formatAmmount: function formatAmmount(amount) {
@@ -13143,7 +13155,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         formatDate: function formatDate(date) {
             var self = this;
-            return __WEBPACK_IMPORTED_MODULE_0_moment___default()(date).format('MMMM DD, YYYY, ddd');
+            var formated = __WEBPACK_IMPORTED_MODULE_0_moment___default()(date).format('MMMM DD, YYYY, ddd');
+            if (formated === 'Invalid date') {
+                return '-';
+            } else {
+                return formated;
+            }
         },
         getProvince: function getProvince(province_id) {
             var self = this;
@@ -13169,6 +13186,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     console.log(resp);
                 }
             });
+        },
+        caculateTotal: function caculateTotal(amounts) {
+            var self = this;
+            var amount = 0;
+            var total = 0;
+            for (var i = 0, len = amounts.length; i < len; i++) {
+                amount = Number(amounts[i]);
+                total += amount;
+            }
+            self.totalAmount = total;
         }
     },
     computed: {
@@ -13179,13 +13206,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 province = {};
             var rsTypes = [],
                 type = {};
-            return self.assists.filter(function (index) {
+            var arr = self.assists.filter(function (index) {
                 rsProvince = _.filter(self.provinces, { id: index.province });
                 rsTypes = _.filter(self.types, { id: index.type_of_assistance });
                 province = rsProvince.length > 0 ? rsProvince[0].name : '';
                 type = rsTypes.length > 0 ? rsTypes[0].name : '';
                 return index.fr_name.toLowerCase().indexOf(search) !== -1 || index.address.toLowerCase().indexOf(search) !== -1 || index.amount.toString().toLowerCase().indexOf(search) !== -1 || province.toLowerCase().indexOf(search) !== -1 || type.toLowerCase().indexOf(search) !== -1;
             });
+            self.caculateTotal(_.map(arr, 'amount'));
+            return arr;
         }
     },
 
@@ -33086,6 +33115,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.frName),
       expression: "frName"
     }],
+    ref: "fr_name",
     staticClass: "form-control",
     attrs: {
       "id": "fr-names",
@@ -33276,7 +33306,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "text-align": "right"
       }
     }, [_c('b', [_vm._v(_vm._s(_vm.formatAmmount(granted.amount)))])])])
-  }))])])])])
+  })), _vm._v(" "), _c('tfoot', [_c('tr', [_c('th'), _vm._v(" "), _c('th', [_vm._v("Total :")]), _vm._v(" "), _c('th'), _vm._v(" "), _c('th'), _vm._v(" "), _c('th'), _vm._v(" "), _c('th'), _vm._v(" "), _c('th', {
+    staticClass: "text-right",
+    staticStyle: {
+      "font-size": "18px"
+    }
+  }, [_c('b', [_vm._v(_vm._s(_vm.formatAmmount(_vm.totalAmount)))])])])])], 1)])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('thead', [_c('tr', [_c('th', [_vm._v("Province")]), _vm._v(" "), _c('th', [_vm._v("FR Name")]), _vm._v(" "), _c('th', [_vm._v("Type of Assistance")]), _vm._v(" "), _c('th', [_vm._v("Address")]), _vm._v(" "), _c('th', [_vm._v("Date Submitted")]), _vm._v(" "), _c('th', [_vm._v("Action Taken")]), _vm._v(" "), _c('th', {
     staticStyle: {

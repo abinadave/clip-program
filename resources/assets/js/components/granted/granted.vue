@@ -33,6 +33,17 @@
 		  	 			<td style="text-align: right"><b>{{ formatAmmount(granted.amount) }}</b></td>
 		  	 		</tr>
 		  	 	</tbody>
+                <tfoot>
+                    <tr>
+                        <th></th>
+                        <th>Total :</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th class="text-right" style="font-size: 18px"><b>{{ formatAmmount(totalAmount) }}</b></th>
+                    </tr>
+                </tfoot>
 		  	 </table>
 		  </div>
 		</div>
@@ -54,14 +65,16 @@
         		types: [],
         		provinces: [],
         		search: '',
-        		selectedType: 0
+        		selectedType: 0,
+                totalAmount: 0
         	}
         },
         methods: {
+
         	getActionTaken(action){
         		let self = this;
         		if (action === '') {
-        			return 'none';
+        			return '-';
         		}
         	},
         	formatAmmount(amount){
@@ -70,7 +83,12 @@
         	},
         	formatDate(date){
         		let self = this;
-        		return moment(date).format('MMMM DD, YYYY, ddd');
+        		let formated = moment(date).format('MMMM DD, YYYY, ddd');
+                if (formated === 'Invalid date') {
+                    return '-';
+                }else {
+                    return formated;
+                }
         	},
         	getProvince(province_id){
         		let self = this;
@@ -96,7 +114,17 @@
         		      console.log(resp);
         		    }
         		});
-        	}
+        	},
+            caculateTotal(amounts){
+                let self = this;
+                let amount = 0;
+                let total = 0;
+                for (var i = 0, len = amounts.length; i < len; i++) {
+                    amount = Number(amounts[i]);
+                    total += amount;
+                }
+                self.totalAmount = total;
+            }
         },
         computed: {
         	filteredList(){
@@ -104,7 +132,7 @@
         		let search = self.search.toLowerCase();
         		let rsProvince = [], province = {};
         		let rsTypes = [], type = {};
-        		return self.assists.filter(function(index) {
+        		let arr = self.assists.filter(function(index) {
         			rsProvince = _.filter(self.provinces, {id: index.province});
         			rsTypes = _.filter(self.types, {id: index.type_of_assistance});
         			province = (rsProvince.length > 0) ? rsProvince[0].name : '';
@@ -115,6 +143,8 @@
         				   province.toLowerCase().indexOf(search) !== -1 ||
         				   type.toLowerCase().indexOf(search) !== -1
         		});
+                self.caculateTotal(_.map(arr, 'amount'));
+                return arr;
         	}
         },
 
