@@ -27,4 +27,5 @@ Route::group(['middleware' => ['admin']], function () {
     Route::delete('type/{id}', 'TypeController@delete');
     Route::get('province', 'ProvinceController@fetchProvinces');
     Route::post('assist', 'AssistController@insert');
+    Route::get('granted', 'AssistController@fetch');
 });

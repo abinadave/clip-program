@@ -45,7 +45,10 @@
                     <ul class="nav navbar-nav">
                         &nbsp;
                         <li>
-                            <router-link to="/grant">Grant Assistance</router-link>
+                            <router-link to="/grant">Grant</router-link>
+                        </li>
+                        <li>
+                            <router-link to="/assistance/granted">Granted</router-link>
                         </li>
                         <li>
                             <router-link to="/assistance/type">Type of Assistance</router-link>

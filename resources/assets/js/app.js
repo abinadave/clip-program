@@ -19,7 +19,7 @@ Vue.http.headers.common['X-CSRF-TOKEN'] = document.querySelector('#csrf-token').
 
 import GrantComp from './components/grant/grant.vue'
 import TypesComp from './components/assistance-types/assitance-types.vue'
-
+import GrantedComp from './components/granted/granted.vue'
 window.router = new VueRouter({
   routes: [
     {
@@ -29,6 +29,10 @@ window.router = new VueRouter({
     {
     	path: '/assistance/type',
     	component: TypesComp
+    },
+    {
+      path: '/assistance/granted',
+      component: GrantedComp
     }
   ]
 });

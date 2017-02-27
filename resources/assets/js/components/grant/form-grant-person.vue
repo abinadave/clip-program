@@ -1,7 +1,7 @@
 <template>
     <div class="">
        <form @submit.prevent="submitForm">
-        <div class="form-group col-md-5">
+        <div :class="{ 'form-group col-md-5 ': true }">
             <label>Province</label>
             <select v-model="province" class="form-control">
                <option v-for="province in provinces" :value="province.id">
@@ -9,32 +9,31 @@
                </option>
             </select>
           </div>
-          <div class="form-group col-md-5">
-            <label >Type of Assistance</label>
-            <select class="form-control">
+          <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.type_of_assistance }">
+            <label>Type of Assistance</label>
+            <select v-model="typeOfAssistance" class="form-control">
                <option v-for="type in types" :value="type.id">
                   {{ type.name }}
                </option>
             </select>
           </div>
-          <div class="form-group col-md-5">
+          <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.fr_name }">
             <label>FR Name</label>
-            <input type="text" class="form-control" placeholder="FR name">
+            <input v-model="frName" type="text" class="form-control" placeholder="FR name">
           </div>
-          
-          <div class="form-group col-md-5">
+          <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.date_submitted }">
             <label>Date Submitted</label>
-            <input type="date" class="form-control" placeholder="Date submitted">
+            <input v-model="dateSubmitted" type="date" class="form-control" placeholder="Date submitted">
           </div>
-          <div class="form-group col-md-5">
+          <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.amount }">
             <label>Amount</label>
-            <input type="number" class="form-control" placeholder="Enter value">
+            <input v-model="amount" type="number" class="form-control" placeholder="Enter value">
           </div>
-          <div class="form-group col-md-5">
+          <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.address }">
             <label>Address</label>
-            <input type="text" class="form-control" placeholder="Address">
+            <input v-model="address" type="text" class="form-control" placeholder="Address">
           </div>
-          <div class="form-group col-md-5">
+          <div :class="{ 'form-group col-md-5 ': true }">
             <button type="submit" class="btn btn-primary btn-lg active">Submit</button>
           </div>
           
@@ -43,6 +42,8 @@
 </template>
 
 <script>
+    import toastr from 'toastr'
+    import alertify from 'alertify.js'
     export default {
         mounted() {
             console.log('Component mounted.');
@@ -53,34 +54,85 @@
             return {
                 types: [], provinces: [],
                 province: 1,
-                typeOfAssistance: 1,
-                frName: 0,
+                typeOfAssistance: 22,
+                frName: '',
                 dateSubmitted: '',
-                amount: 0,
+                amount: '',
                 address: '',
                 actionTaken: '',
+                error: {
+                    province: false,
+                    type_of_assistance: false,
+                    fr_name: false,
+                    date_submitted: false,
+                    amount: false,
+                    address: false,
+                    action_taken: false
+                }
             }
         },
         methods: {
+            getAssistanceName(){
+                let self = this;
+                return 'nice'
+            },
             submitForm(){
                 let self = this;
-                self.$http.post('/assist',{
+                self.clearError();
+                let form = {
+                   province: self.province,
                    fr_name: self.frName,
                    type_of_assistance: self.typeOfAssistance,
                    date_submitted: self.dateSubmitted,
                    amount: self.amount,
                    address: self.address,
                    action_taken: self.actionTaken
-                }).then((resp) => {
+                };
+                self.$http.post('/assist', form).then((resp) => {
                     if (resp.status === 200) {
                         let json = resp.body;
                         console.log(json)
+                        if (json.duplicate > 0) {
+                            self.error.fr_name = true;
+                            self.error.type_of_assistance = true;
+                            alertify.confirm('FR Name: <b class="text-primary">' +self.frName.toUpperCase() + '</b> had already granted <i class="text-danger">' + self.getAssistanceName() + ' Assistance</i> ');
+                        }else {
+                            if (json.assist.id > 0) {
+                                toastr.success('Successfully granted');
+                                self.clearForm();
+                            }
+                        }
+                        
                     }
                 }, (resp) => {
                     if (resp.status === 422) {
-                      console.log(resp)
+                        let json = resp.body;
+                        $.each(json, function(index, val) {
+                            console.log(index + ': ' + val)
+                            self.error[index] = true;
+                        });
                     }
                 });
+            },
+            getAssistanceName(){
+                let self = this;
+                let type = self.typeOfAssistance;
+                let rs = _.filter(self.types, {id: type});
+                return (rs.length > 0) ? rs[0].name : '-';
+            },
+            clearError(){
+                let self = this;
+                $.each(self.error, function(index, val) {
+                    self.error[index] = false;
+                });
+            },
+            clearForm(){
+                let self = this;
+                self.frName = '';
+                self.dateSubmitted = '';
+                self.amount = '';
+                self.address = '';
+                self.actionTaken = '';
             },
             fetchProvinces(){
                 let self = this;
