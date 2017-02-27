@@ -10,7 +10,7 @@
 		  	 	{{ type.name }}
 		  	 </option>
 		  </select><hr>
-		  	 <table class="table hover table-striped">
+		  	 <table class="table table-hover table-striped">
 		  	 	<thead>
 		  	 		<tr>
 		  	 			<th>Province</th>
@@ -18,8 +18,8 @@
 		  	 			<th>Type of Assistance</th>
 		  	 			<th>Address</th>
 		  	 			<th>Date Submitted</th>
-		  	 			<th>Amount</th>
 		  	 			<th>Action Taken</th>
+		  	 			<th style="text-align: right">Amount</th>
 		  	 		</tr>
 		  	 	</thead>
 		  	 	<tbody>
@@ -29,8 +29,8 @@
 		  	 			<td>{{ getType(granted.type_of_assistance) }}</td>
 		  	 			<td>{{ granted.address }}</td>
 		  	 			<td>{{ formatDate(granted.date_submitted) }}</td>
-		  	 			<td><b>{{ formatAmmount(granted.amount) }}</b></td>
 		  	 			<td>{{ getActionTaken(granted.action_taken) }}</td>
+		  	 			<td style="text-align: right"><b>{{ formatAmmount(granted.amount) }}</b></td>
 		  	 		</tr>
 		  	 	</tbody>
 		  	 </table>

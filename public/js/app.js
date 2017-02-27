@@ -33208,12 +33208,20 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }, [_vm._v("\n\t\t  \t \t" + _vm._s(type.name) + "\n\t\t  \t ")])
   })], 2), _c('hr'), _vm._v(" "), _c('table', {
-    staticClass: "table hover table-striped"
+    staticClass: "table table-hover table-striped"
   }, [_vm._m(0), _vm._v(" "), _c('tbody', _vm._l((_vm.filteredList), function(granted) {
-    return _c('tr', [_c('td', [_vm._v(_vm._s(_vm.getProvince(granted.province)))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(granted.fr_name))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(_vm.getType(granted.type_of_assistance)))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(granted.address))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(_vm.formatDate(granted.date_submitted)))]), _vm._v(" "), _c('td', [_c('b', [_vm._v(_vm._s(_vm.formatAmmount(granted.amount)))])]), _vm._v(" "), _c('td', [_vm._v(_vm._s(_vm.getActionTaken(granted.action_taken)))])])
+    return _c('tr', [_c('td', [_vm._v(_vm._s(_vm.getProvince(granted.province)))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(granted.fr_name))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(_vm.getType(granted.type_of_assistance)))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(granted.address))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(_vm.formatDate(granted.date_submitted)))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(_vm.getActionTaken(granted.action_taken)))]), _vm._v(" "), _c('td', {
+      staticStyle: {
+        "text-align": "right"
+      }
+    }, [_c('b', [_vm._v(_vm._s(_vm.formatAmmount(granted.amount)))])])])
   }))])])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('thead', [_c('tr', [_c('th', [_vm._v("Province")]), _vm._v(" "), _c('th', [_vm._v("FR Name")]), _vm._v(" "), _c('th', [_vm._v("Type of Assistance")]), _vm._v(" "), _c('th', [_vm._v("Address")]), _vm._v(" "), _c('th', [_vm._v("Date Submitted")]), _vm._v(" "), _c('th', [_vm._v("Amount")]), _vm._v(" "), _c('th', [_vm._v("Action Taken")])])])
+  return _c('thead', [_c('tr', [_c('th', [_vm._v("Province")]), _vm._v(" "), _c('th', [_vm._v("FR Name")]), _vm._v(" "), _c('th', [_vm._v("Type of Assistance")]), _vm._v(" "), _c('th', [_vm._v("Address")]), _vm._v(" "), _c('th', [_vm._v("Date Submitted")]), _vm._v(" "), _c('th', [_vm._v("Action Taken")]), _vm._v(" "), _c('th', {
+    staticStyle: {
+      "text-align": "right"
+    }
+  }, [_vm._v("Amount")])])])
 }]}
 module.exports.render._withStripped = true
 if (false) {

@@ -36,7 +36,7 @@
 
                     <!-- Branding Image -->
                     <a class="navbar-brand" href="{{ url('/') }}">
-                        {{ config('app.name', 'Laravel') }}
+                        <i class="text-primary" style="font-weight: bolder">{{ config('app.name', 'Laravel') }}</i>
                     </a>
                 </div>
 
