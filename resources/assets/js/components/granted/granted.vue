@@ -1,50 +1,46 @@
 <template>
     <div class="container">
         <div class="panel panel-default">
-		  <div class="panel-heading">Panel Heading</div>
+		  <div class="panel-heading">List of Clients</div>
 		  <div class="panel-body">
-		  <input v-model="search" type="text" class="form-control" placeholder="Search" style="width: 220px">
+		  <input v-model="search" type="text" class="form-control" placeholder="Search" style="width: 220px; border-radius: 25px">
 		  <select v-model="selectedType" class="form-control pull-right" style="width: 30%; margin-top: -36px">
 		  	 <option :value="0">All</option>
 		  	 <option :value="type.id" v-for="type in types">
 		  	 	{{ type.name }}
 		  	 </option>
 		  </select><hr>
-		  	 <table class="table table-hover table-striped">
-		  	 	<thead>
-		  	 		<tr>
-		  	 			<th>Province</th>
-		  	 			<th>FR Name</th>
-		  	 			<th>Type of Assistance</th>
-		  	 			<th>Address</th>
-		  	 			<th>Date Submitted</th>
-		  	 			<th>Action Taken</th>
-		  	 			<th style="text-align: right">Amount</th>
-		  	 		</tr>
-		  	 	</thead>
-		  	 	<tbody>
-		  	 		<tr v-for="granted in filteredList">
-		  	 			<td>{{ getProvince(granted.province) }}</td>
-		  	 			<td>{{ granted.fr_name }}</td>
-		  	 			<td>{{ getType(granted.type_of_assistance) }}</td>
-		  	 			<td>{{ granted.address }}</td>
-		  	 			<td>{{ formatDate(granted.date_submitted) }}</td>
-		  	 			<td>{{ getActionTaken(granted.action_taken) }}</td>
-		  	 			<td style="text-align: right"><b>{{ formatAmmount(granted.amount) }}</b></td>
-		  	 		</tr>
-		  	 	</tbody>
-                <tfoot>
-                    <tr>
-                        <th></th>
-                        <th>Total :</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th class="text-right" style="font-size: 18px"><b>{{ formatAmmount(totalAmount) }}</b></th>
-                    </tr>
-                </tfoot>
-		  	 </table>
+             <div style="overflow: auto; height: 500px">
+    		  	 <table class="table table-hover table-striped table-bordered">
+    		  	 	<thead>
+    		  	 		<tr class="text-warning">
+    		  	 			<th>PROVINce</th>
+    		  	 			<th>FR NAME</th>
+    		  	 			<th>TYPE OF ASSISTANCE</th>
+    		  	 			<th>ADDRESS</th>
+    		  	 			<th>DATE SUBMITTED</th>
+    		  	 			<th>ACTION TAKEN</th>
+    		  	 			<th style="text-align: right">AMOUNT</th>
+    		  	 		</tr>
+    		  	 	</thead>
+    		  	 	<tbody>
+    		  	 		<tr v-for="granted in filteredList">
+    		  	 			<td>{{ getProvince(granted.province) }}</td>
+    		  	 			<td>{{ granted.fr_name }}</td>
+    		  	 			<td>{{ getType(granted.type_of_assistance) }}</td>
+    		  	 			<td>{{ granted.address }}</td>
+    		  	 			<td>{{ formatDate(granted.date_submitted) }}</td>
+    		  	 			<td>{{ getActionTaken(granted.action_taken) }}</td>
+    		  	 			<td style="text-align: right"><b>{{ formatAmmount(granted.amount) }}</b></td>
+    		  	 		</tr>
+    		  	 	</tbody>
+                   
+    		  	 </table>
+             </div>
+             <div>
+                <h5 class="pull-left" style="font-size: 20px"><b>TOTAL:</b></h5>
+                 <h5 class="pull-right text-primary" style="font-size: 20px">P<b>{{ formatAmmount(totalAmount) }}&nbsp;&nbsp;&nbsp;&nbsp;</b></h5>
+             </div>
 		  </div>
 		</div>
     </div>
@@ -70,7 +66,6 @@
         	}
         },
         methods: {
-
         	getActionTaken(action){
         		let self = this;
         		if (action === '') {
