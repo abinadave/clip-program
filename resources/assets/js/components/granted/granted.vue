@@ -1,10 +1,16 @@
 <template>
+   <div>
     <div class="container">
+
         <div class="panel panel-default">
-		  <div class="panel-heading">List of Clients</div>
+		  <div class="panel-heading">List of Clients 
+             <a @click="editTr" :class="{ 'pencil-edit pull-right': true }"><i class="fa fa-2x fa-pencil-square" aria-hidden="true" style="display: inline"></i></a>
+          </div>
 		  <div class="panel-body">
-		  <input v-model="search" type="text" class="form-control" placeholder="Search" style="width: 220px; border-radius: 25px">
-		  <select v-model="selectedType" class="form-control pull-right" style="width: 30%; margin-top: -36px">
+          
+		  <input v-model="search" type="text" class="form-control" placeholder="Search" style="width: 220px; border-radius: 25px;">
+		  
+          <select v-model="selectedType" class="form-control pull-right" style="width: 30%; margin-top: -36px;display: inline">
 		  	 <option :value="0">All</option>
 		  	 <option :value="type.id" v-for="type in types">
 		  	 	{{ type.name }}
@@ -24,7 +30,7 @@
     		  	 		</tr>
     		  	 	</thead>
     		  	 	<tbody>
-    		  	 		<tr v-for="granted in filteredList">
+    		  	 		<tr :id="granted.id" @click="selectFilteredList(granted)" v-for="granted in filteredList">
     		  	 			<td>{{ getProvince(granted.province) }}</td>
     		  	 			<td>{{ granted.fr_name }}</td>
     		  	 			<td>{{ getType(granted.type_of_assistance) }}</td>
@@ -44,13 +50,27 @@
 		  </div>
 		</div>
     </div>
+    <modal-edit-granted
+        :provinces="provinces"
+        :types="types"
+        :modal-granted="modalGranted"
+    ></modal-edit-granted>
+</div>
 </template>
-
+<style type="text/css">
+    tbody tr {
+        cursor: pointer;
+    }
+    .pencil-edit {
+        cursor: pointer;
+        margin-left: 10px;
+    }
+</style>
 <script>
 
 	import moment from 'moment'
 	import accounting from 'accounting'
-	
+	import CompModalEdit from './modal-update-granted.vue'
     export default {
         mounted(){
         	this.fetch();
@@ -62,10 +82,29 @@
         		provinces: [],
         		search: '',
         		selectedType: 0,
-                totalAmount: 0
+                totalAmount: 0,
+                currentTrClicked: 0,
+                modalGranted: []
         	}
         },
+        components: {
+            'modal-edit-granted': CompModalEdit
+        },
         methods: {
+            editTr(tr){
+                let self = this;
+                let rs = _.filter(self.assists, {id: self.currentTrClicked});
+                self.modalGranted = rs;
+                $('#modal-edit-granted').modal('show');
+            },
+            selectFilteredList(granted){
+                /* when tr is clicked */
+                let self = this;
+                self.currentTrClicked = granted.id;
+                let $el = $(self.$el);
+                $el.find('tbody').find('tr').removeClass('text-primary');
+                $el.find('tbody tr#'+granted.id).addClass('text-primary');
+            },
         	getActionTaken(action){
         		let self = this;
         		if (action === '') {
