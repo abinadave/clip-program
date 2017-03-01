@@ -29,4 +29,5 @@ Route::group(['middleware' => ['admin']], function () {
     Route::post('assist', 'AssistController@insert');
     Route::get('granted', 'AssistController@fetch');
     Route::get('assist/display/by/type/{id}', 'AssistController@fetchByType');
+    Route::put('granted', 'AssistController@put');
 });

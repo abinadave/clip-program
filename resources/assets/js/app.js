@@ -22,6 +22,10 @@ import TypesComp from './components/assistance-types/assitance-types.vue'
 import GrantedComp from './components/granted/granted.vue'
 window.router = new VueRouter({
   routes: [
+    { 
+      path: '/', 
+      redirect: '/assistance/granted' 
+    },
     {
 	    path: '/grant',
 	    component: GrantComp

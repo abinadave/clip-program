@@ -5,6 +5,7 @@
         <div class="panel panel-default">
 		  <div class="panel-heading">List of Clients 
              <a @click="editTr" :class="{ 'pencil-edit pull-right': true }"><i class="fa fa-2x fa-pencil-square" aria-hidden="true" style="display: inline"></i></a>
+             <a @click="grantToClient" :class="{ 'pencil-edit text-success pull-right': true }"><i class="fa fa-2x fa-handshake-o" aria-hidden="true"></i></a>
           </div>
 		  <div class="panel-body">
           
@@ -36,7 +37,7 @@
     		  	 			<td>{{ getType(granted.type_of_assistance) }}</td>
     		  	 			<td>{{ granted.address }}</td>
     		  	 			<td>{{ formatDate(granted.date_submitted) }}</td>
-    		  	 			<td>{{ getActionTaken(granted.action_taken) }}</td>
+    		  	 			<td>{{ granted.action_taken }}</td>
     		  	 			<td style="text-align: right"><b>{{ formatAmmount(granted.amount) }}</b></td>
     		  	 		</tr>
     		  	 	</tbody>
@@ -51,6 +52,7 @@
 		</div>
     </div>
     <modal-edit-granted
+        @assistupdated="childUpdate"
         :provinces="provinces"
         :types="types"
         :modal-granted="modalGranted"
@@ -71,6 +73,8 @@
 	import moment from 'moment'
 	import accounting from 'accounting'
 	import CompModalEdit from './modal-update-granted.vue'
+    import alertify from 'alertify.js'
+
     export default {
         mounted(){
         	this.fetch();
@@ -91,6 +95,39 @@
             'modal-edit-granted': CompModalEdit
         },
         methods: {
+            grantToClient(){
+                let self = this;
+                let rsAssist = _.filter(self.assists, { id: self.currentTrClicked});
+                let assist = (rsAssist.length > 0) ? rsAssist[0] : { fr_name: ''};
+                let rsType = _.filter(self.types, {id: assist.type_of_assistance});
+                let type = (rsType.length > 0) ? rsType[0] : { name: ''};
+                alertify.confirm('Do you really want to Grant: <b>' + type.name.toUpperCase() + '</b> Assistance <br> <b class="text-success">'+assist.fr_name + '</b>',
+                  function(){
+                      self.grantNow(assist);
+                  },    
+                  function(){
+                    alertify.error('Canceled');
+                  });
+            },
+            grantNow(assist){
+                /* hits confirm ok, and then grant it now */
+                let self = this;
+                console.log(assist);
+            },
+            childUpdate(form){
+                let self = this;
+                let rs = _.filter(self.assists, {id: form.id});
+                if (rs.length) {
+                    let model = _.first(rs);
+                    model.province = form.province;
+                    model.typeOfAssistance = form.type_of_assistance;
+                    model.frName = form.fr_name;
+                    model.amount = form.amount;
+                    model.address = form.address;
+                    model.date_submitted = form.date_submitted;
+                    model.action_taken = form.action_taken;
+                }
+            },
             editTr(tr){
                 let self = this;
                 let rs = _.filter(self.assists, {id: self.currentTrClicked});

@@ -7,6 +7,31 @@ use App\Assist as Assist;
 
 class AssistController extends Controller
 {
+    public function put(Request $request){
+        $this->validate($request, [
+            'fr_name' => 'required',
+            'province' => 'required',
+            'address' => 'required',
+            'type_of_assistance' => 'required',
+            'amount' => 'required|numeric'
+        ]);
+        return $this->update($request);
+    }
+    private function update($request){
+        $id = $request->input('id');
+        $assist = Assist::findOrFail($id);
+        $assist->fr_name = $request->input('fr_name');
+        $assist->province = $request->input('province');
+        $assist->address = $request->input('address');
+        $assist->amount = $request->input('amount');
+        $assist->date_submitted = $request->input('date_submitted');
+        $assist->type_of_assistance = $request->input('type_of_assistance');
+        $assist->action_taken = $request->input('action_taken');
+        $rs = $assist->save();
+        return response()->json([
+            'updated' => $rs
+        ]);
+    }
     public function fetchByType($type){
         return response()->json([
             'type' => $type,
