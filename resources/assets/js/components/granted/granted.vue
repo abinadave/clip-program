@@ -57,6 +57,7 @@
         :types="types"
         :modal-granted="modalGranted"
     ></modal-edit-granted>
+    <modal-grant :assist="modalGrantPerson" :type="modalGrantType"></modal-grant>
 </div>
 </template>
 <style type="text/css">
@@ -74,7 +75,7 @@
 	import accounting from 'accounting'
 	import CompModalEdit from './modal-update-granted.vue'
     import alertify from 'alertify.js'
-
+    import CompModalConfirmGrant from './modal_confirm_grant_to_client.vue'
     export default {
         mounted(){
         	this.fetch();
@@ -88,11 +89,14 @@
         		selectedType: 0,
                 totalAmount: 0,
                 currentTrClicked: 0,
-                modalGranted: []
+                modalGranted: [],
+                modalGrantPerson: {},
+                modalGrantType: {}
         	}
         },
         components: {
-            'modal-edit-granted': CompModalEdit
+            'modal-edit-granted': CompModalEdit,
+            'modal-grant': CompModalConfirmGrant
         },
         methods: {
             grantToClient(){
@@ -101,13 +105,17 @@
                 let assist = (rsAssist.length > 0) ? rsAssist[0] : { fr_name: ''};
                 let rsType = _.filter(self.types, {id: assist.type_of_assistance});
                 let type = (rsType.length > 0) ? rsType[0] : { name: ''};
-                alertify.confirm('Do you really want to Grant: <b>' + type.name.toUpperCase() + '</b> Assistance <br> <b class="text-success">'+assist.fr_name + '</b>',
-                  function(){
-                      self.grantNow(assist);
-                  },    
-                  function(){
-                    alertify.error('Canceled');
-                  });
+                self.modalGrantPerson = assist;
+                self.modalGrantType = type;
+                $('#modal-confirm-grant').modal('show');
+                // alertify.confirm('Do you really want to Grant: <b>' + type.name.toUpperCase() + '</b> Assistance <br> <b class="text-success">'+assist.fr_name + '</b>',
+                //   function(){
+                //       self.grantNow(assist);
+                //   },    
+                //   function(){
+                //     alertify.error('Canceled');
+                //   });
+                
             },
             grantNow(assist){
                 /* hits confirm ok, and then grant it now */
