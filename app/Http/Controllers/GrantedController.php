@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Auth;
 
 class GrantedController extends Controller
 {
+	public function fetch(){
+		return Granted::orderBy('id','desc')->get();
+	}
     public function insert(Request $request){
     	// if (Auth::check()) {
 		    $date = $request->input('date');

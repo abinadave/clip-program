@@ -22,6 +22,7 @@ Route::group(['middleware' => ['admin']], function () {
     Route::get('admin', function(){
     	return view('layouts.admin');
     });
+    Route::get('granted/client', 'GrantedController@fetch');
     Route::post('type', 'TypeController@insert');
     Route::get('type', 'TypeController@fetch');
     Route::delete('type/{id}', 'TypeController@delete');

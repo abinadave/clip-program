@@ -21,10 +21,7 @@
             <label>FR Name</label>
             <input ref='fr_name' id="fr-names" v-model="frName" type="text" class="form-control" placeholder="FR name">
           </div>
-          <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.date_submitted }">
-            <label>Date Submitted</label>
-            <input v-model="dateSubmitted" type="date" class="form-control" placeholder="Date submitted">
-          </div>
+          
           <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.amount }">
             <label>Amount</label>
             <input v-model="amount" type="number" class="form-control" placeholder="Enter value">
@@ -33,7 +30,19 @@
             <label>Address</label>
             <input id="addresses" v-model="address" type="text" class="form-control" placeholder="Address">
           </div>
-          <div :class="{ 'form-group col-md-5 ': true }">
+          <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.date_submitted }">
+            <label>Date Submitted to MBOO</label>
+            <input v-model="dateSubmitted" type="date" class="form-control" placeholder="Date submitted">
+          </div>
+          <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.action_taken }">
+            <label>Action Taken</label>
+            <input v-model="actionTaken" type="text" class="form-control" placeholder="Action Taken">
+          </div>
+          <div :class="{ 'form-group col-md-5 ': true, 'has-warning' : error.date_received }">
+            <label>Date Received From F.O (Field Officer)</label>
+            <input v-model="dateReceived" type="date" class="form-control" placeholder="Date received from F.O">
+          </div><br><hr>
+          <div :class="{ 'form-group col-md-9 ': true }">
             <button type="submit" class="btn btn-primary btn-lg active">Submit</button>
           </div>
           
@@ -44,13 +53,13 @@
 <script>
     import toastr from 'toastr'
     import alertify from 'alertify.js'
-    import 'jquery-ui/themes/base/theme.css';
-    import 'jquery-ui/themes/base/core.css';
-    import 'jquery-ui/themes/base/theme.css';
+    import 'jquery-ui/themes/base/theme.css'
+    import 'jquery-ui/themes/base/core.css'
+    import 'jquery-ui/themes/base/theme.css'
     import 'jquery-ui'
-    import 'jquery-ui/themes/base/autocomplete.css';
-    import 'jquery-ui/ui/widgets/autocomplete';
-    import 'jquery-ui/ui/core';
+    import 'jquery-ui/themes/base/autocomplete.css'
+    import 'jquery-ui/ui/widgets/autocomplete'
+    import 'jquery-ui/ui/core'
 
     export default {
         mounted() {
@@ -70,6 +79,7 @@
                 amount: '',
                 address: '',
                 actionTaken: '',
+                dateReceived: '',
                 error: {
                     province: false,
                     type_of_assistance: false,
@@ -77,7 +87,9 @@
                     date_submitted: false,
                     amount: false,
                     address: false,
-                    action_taken: false
+                    action_taken: false,
+                    date_received: false,
+                    action_taken: ''
                 }
             }
         },
@@ -98,7 +110,7 @@
                 $( "#addresses" ).autocomplete({
                   source: _.uniq(addresses),
                   select: function( event, ui ) {
-                    self.address = ui.item.value;
+                     self.address = ui.item.value;
                   }
                 });
             },
@@ -116,7 +128,8 @@
                    date_submitted: self.dateSubmitted,
                    amount: self.amount,
                    address: self.address,
-                   action_taken: self.actionTaken
+                   action_taken: self.actionTaken,
+                   date_received: self.dateReceived
                 };
                 self.$http.post('/assist', form).then((resp) => {
                     if (resp.status === 200) {
@@ -163,6 +176,7 @@
                 self.amount = '';
                 self.address = '';
                 self.actionTaken = '';
+                self.dateReceived = '';
             },
             fetchProvinces(){
                 let self = this;

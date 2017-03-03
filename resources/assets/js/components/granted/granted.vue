@@ -1,44 +1,49 @@
 <template>
    <div>
-    <div class="container">
+    <div class="col-md-12">
 
         <div class="panel panel-default">
 		  <div class="panel-heading">List of Clients 
              <a @click="editTr" :class="{ 'pencil-edit pull-right': true }"><i class="fa fa-2x fa-pencil-square" aria-hidden="true" style="display: inline"></i></a>
-             <a @click="grantToClient" :class="{ 'pencil-edit text-success pull-right': true }"><i class="fa fa-2x fa-handshake-o" aria-hidden="true"></i></a>
+             <a class="btn btn-info btn-xs" @click="grantToClient" :class="{ 'pencil-edit pull-right': true }"><i class="fa fa-2x fa-handshake-o" aria-hidden="true"></i> Grant</a>
+             <a class="btn btn-info btn-xs">Grant</a>
           </div>
 		  <div class="panel-body">
           
 		  <input v-model="search" type="text" class="form-control" placeholder="Search" style="width: 220px; border-radius: 25px;">
 		  
-          <select v-model="selectedType" class="form-control pull-right" style="width: 30%; margin-top: -36px;display: inline">
+          <select v-model="selectedType" class="form-control pull-right" style="width: 10%; margin-top: -36px;display: inline">
 		  	 <option :value="0">All</option>
 		  	 <option :value="type.id" v-for="type in types">
 		  	 	{{ type.name }}
 		  	 </option>
 		  </select><hr>
-             <div style="overflow: auto; height: 500px">
-    		  	 <table class="table table-hover table-striped table-bordered">
+             <div style="overflow: auto; height: 500px; font-size: 13px">
+    		  	 <table class="table table-hover table-striped table-bordered table-condensed">
     		  	 	<thead>
     		  	 		<tr class="text-warning">
-    		  	 			<th>PROVINce</th>
+    		  	 			<th>PROVINCE</th>
     		  	 			<th>FR NAME</th>
-    		  	 			<th>TYPE OF ASSISTANCE</th>
+    		  	 			<th class="text-center">TYPE OF ASSISTANCE</th>
     		  	 			<th>ADDRESS</th>
     		  	 			<th>DATE SUBMITTED</th>
     		  	 			<th>ACTION TAKEN</th>
     		  	 			<th style="text-align: right">AMOUNT</th>
+                            <th>Date Fund Downloaded to F.O</th>
+                            <th width="1">Status</th>
     		  	 		</tr>
     		  	 	</thead>
     		  	 	<tbody>
-    		  	 		<tr :id="granted.id" @click="selectFilteredList(granted)" v-for="granted in filteredList">
-    		  	 			<td>{{ getProvince(granted.province) }}</td>
-    		  	 			<td>{{ granted.fr_name }}</td>
-    		  	 			<td>{{ getType(granted.type_of_assistance) }}</td>
-    		  	 			<td>{{ granted.address }}</td>
-    		  	 			<td>{{ formatDate(granted.date_submitted) }}</td>
-    		  	 			<td>{{ granted.action_taken }}</td>
-    		  	 			<td style="text-align: right"><b>{{ formatAmmount(granted.amount) }}</b></td>
+    		  	 		<tr :id="assist.id" @click="selectFilteredList(assist)" v-for="assist in filteredList">
+    		  	 			<td>{{ getProvince(assist.province) }}</td>
+    		  	 			<td>{{ assist.fr_name }}</td>
+    		  	 			<td class="text-center">{{ getType(assist.type_of_assistance) }}</td>
+    		  	 			<td>{{ assist.address }}</td>
+    		  	 			<td>{{ formatDate(assist.date_submitted) }}</td>
+    		  	 			<td>{{ assist.action_taken }}</td>
+    		  	 			<td style="text-align: right"><b>{{ formatAmmount(assist.amount) }}</b></td>
+                            <td>{{ dateGranted(assist) }}</td>
+                            <td class="text-center text-primary" v-html="checkIfGranted(assist)"></td>
     		  	 		</tr>
     		  	 	</tbody>
                    
@@ -57,7 +62,7 @@
         :types="types"
         :modal-granted="modalGranted"
     ></modal-edit-granted>
-    <modal-grant :assist="modalGrantPerson" :type="modalGrantType"></modal-grant>
+    <modal-grant @addgranteds="newGranted" :assist="modalGrantPerson" :type="modalGrantType"></modal-grant>
 </div>
 </template>
 <style type="text/css">
@@ -79,12 +84,14 @@
     export default {
         mounted(){
         	this.fetch();
+            this.fetchAllGranted();
         },
         data(){
         	return {
         		assists: [],
         		types: [],
         		provinces: [],
+                granteds: [],
         		search: '',
         		selectedType: 0,
                 totalAmount: 0,
@@ -99,6 +106,38 @@
             'modal-grant': CompModalConfirmGrant
         },
         methods: {
+            dateGranted(assist){
+                let self = this;
+                let rs = _.filter(self.granteds, {assist_id: assist.id});
+                if (rs.length) {
+                    let model = _.first(rs);
+                    return moment(new Date(model.date)).format('MMMM DD, YYYY, dddd')
+                }
+            },
+            checkIfGranted(assist){
+                let self = this;
+                let rs = _.filter(self.granteds, {assist_id: assist.id});
+                if (rs.length) {
+                    return '<i class="fa fa-check" aria-hidden="true"></i>';
+                }
+            },
+            fetchAllGranted(){
+                let self = this;
+                self.$http.get('/granted/client').then((resp) => {
+                    if (resp.status === 200) {
+                        let json = resp.body;
+                        self.granteds = json;
+                    }
+                }, (resp) => {
+                    console.log(resp);
+                });
+            },
+            newGranted(model){
+                let self = this;
+                $('#modal-confirm-grant').modal('hide');
+                self.granteds.push(model);
+                alertify.alert("Successfully granted assistance");
+            },
             grantToClient(){
                 let self = this;
                 let rsAssist = _.filter(self.assists, { id: self.currentTrClicked});
@@ -108,14 +147,6 @@
                 self.modalGrantPerson = assist;
                 self.modalGrantType = type;
                 $('#modal-confirm-grant').modal('show');
-                // alertify.confirm('Do you really want to Grant: <b>' + type.name.toUpperCase() + '</b> Assistance <br> <b class="text-success">'+assist.fr_name + '</b>',
-                //   function(){
-                //       self.grantNow(assist);
-                //   },    
-                //   function(){
-                //     alertify.error('Canceled');
-                //   });
-                
             },
             grantNow(assist){
                 /* hits confirm ok, and then grant it now */

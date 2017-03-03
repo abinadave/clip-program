@@ -16,7 +16,7 @@
           </div>
           <div class="modal-footer">
              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-             <button type="button" class="btn btn-primary" @click="proceedGranting">Yes</button>
+             <button :disabled="stillGranting" type="button" class="btn btn-primary" @click="proceedGranting">Yes</button>
           </div>
         </div>
       </div>
@@ -44,7 +44,8 @@
       	},
         data(){
             return {
-                dateGranted: ''
+                dateGranted: '',
+                stillGranting: false
             }
         },
         mounted(){
@@ -59,8 +60,13 @@
             });
         },
         methods: {
+            disabledTheBtn(){
+                let self = this;
+                self.stillGranting = true;
+            },
             proceedGranting(){
                 let self = this;
+                self.stillGranting = true;
                 let isValid = moment(new Date(self.dateGranted)).isValid(); // false
                 if (isValid) {
                     self.$http.post('/grant', {
@@ -71,10 +77,10 @@
                     let toastr = require('toastr');
                     toastr.warning('Please recheck your date format, enter another date');
                 }
-                
             },
             succeedGranting(resp){
                 let self = this;
+                self.stillGranting = false;
                 if (resp.status === 200) {
                     let json = resp.body;
                     self.$emit('addgranteds', json);

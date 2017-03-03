@@ -51,7 +51,8 @@ class AssistController extends Controller
 	        'province' => 'required',
 	        'address' => 'required',
 	        'type_of_assistance' => 'required',
-	        // 'date_submitted' => 'required',
+            'action_taken' => 'required',
+	        'date_received' => 'required',
 	        'amount' => 'required|numeric'
 	    ]);
 	    return $this->validateDuplicates($request);
@@ -79,7 +80,8 @@ class AssistController extends Controller
     	$assist->amount = $request->input('amount');
     	$assist->date_submitted = $request->input('date_submitted');
     	$assist->type_of_assistance = $request->input('type_of_assistance');
-    	$assist->action_taken = '';
+    	$assist->action_taken = $request->input('action_taken');
+        $assist->date_received = $request->input('date_received');
     	$assist->save();
     	return $assist;
     }
