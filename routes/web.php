@@ -17,7 +17,6 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index');
 
-
 Route::group(['middleware' => ['admin']], function () {
     Route::get('admin', function(){
     	return view('layouts.admin');
