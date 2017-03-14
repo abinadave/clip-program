@@ -29,7 +29,7 @@ class HomeController extends Controller
 
     public function redirect(){
         if (Auth::check() && Auth::user()->admin == 1) {
-            return view('admin');
+            return view('layouts.admin');
         }elseif(Auth::check()){
             echo "user la";
         }else {

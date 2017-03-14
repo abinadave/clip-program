@@ -28193,7 +28193,7 @@ Vue.use(__WEBPACK_IMPORTED_MODULE_1_vue_resource___default.a);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-// Vue.http.headers.common['X-CSRF-TOKEN'] = document.querySelector('#csrf-token').getAttribute('content');
+Vue.http.headers.common['X-CSRF-TOKEN'] = document.querySelector('#csrf-token').getAttribute('content');
 
 
 
